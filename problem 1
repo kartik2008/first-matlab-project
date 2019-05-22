@@ -1,32 +1,45 @@
-body=[0,0,0,1]'
-x1=body(1)
-y1=body(2)
-z1=body(3)
-shoulder=[0,0,10,1]'
-x2=shoulder(1)
-y2=shoulder(2)
-z2=shoulder(3)
-prompt='What is the value of theta1?';
-prompt2='What is the value of theta2?';
-prompt3='What is the value of theta3?';
-theta1=input(prompt)
-theta2=input(prompt2)
-theta3=input(prompt3)
-t=[1 0 0 10*cos(theta1)*sin(theta2);0 1 0 10*sin(theta1)*sin(theta2);0 0 1 10*cos(theta2);0 0 0 1]
-elbow=t*shoulder
-x3=elbow(1)
-y3=elbow(2)
-z3=elbow(3)
-r=[sin(theta3) 0 cos(theta3) 0;0 1 0 0;cos(theta3) 0 -sin(theta3) 0;0 0 0 1]
-t1=[1 0 0 10;0 1 0 10;0 0 1 10;0 0 0 1]
-forearm=t*(r*elbow)
-x4=forearm(1)
-y4=forearm(2)
-z4=forearm(3)
-A=[x1 x2 x3 x4]
-B=[y1 y2 y3 y4]
-C=[z1 z2 z3 z4]
-plot3(A,B,C,'r-o')
+prompt1 = 'theta1?';
+prompt2 = 'theta2?';
+prompt3 = 'theta3?';
+theta1 = input(prompt1);
+theta2 = input(prompt2);
+theta3 = input(prompt3);
 
+body = [0,0,0,1]';
+shoulder = [0, 0, 10,1]';
+elbow0 = [10,0,10,1]';
+
+R_theta1 = [cos(theta1),-sin(theta1),0,0; sin(theta1),cos(theta1),0,0; 0,0,1,0; 0,0,0,1];
+R_theta2 = [cos(theta2),0,sin(theta2),0; 0,1,0,0; -sin(theta2),0,cos(theta2),0; 0,0,0,1];
+
+elbow = (R_theta2)*(R_theta1*elbow0);
+x3 = elbow(1);
+y3 = elbow(2);
+z3 = elbow(3);
+T_Elbow_to_Body = [1,0,0,-x3; 0,1,0,-y3; 0,0,1,-z3; 0,0,0,1];
+T_Body_to_Elbow = [1,0,0,x3; 0,1,0,y3; 0,0,1,z3; 0,0,0,1];
+R_theta3 = [cos(theta3),0,sin(theta3),0; 0,1,0,0; -sin(theta3),0,cos(theta3),0; 0,0,0,1];
+forearm0 = [1,0,0,x3; 0,1,0,y3; 0,0,1,0; 0,0,0,1]*elbow;
+
+forearm = T_Body_to_Elbow*R_theta3*T_Elbow_to_Body*forearm0;
+x1 = body(1);
+y1 = body(2);
+z1 = body(3);
+x2 = shoulder(1);
+y2 = shoulder(2);
+z2 = shoulder(3);
+x4 = forearm(1);
+y4 = forearm(2);
+z4 = forearm(3);
+
+X = [x1,x2,x3,x4];
+Y = [y1,y2,y3,y4];
+Z = [z1,z2,z3,z4];
+
+plot3(X,Y,Z, 'k-o', 'LineWidth', 3)
+text(x1,y1,z1,'  Body');
+text(x2,y2,z2,'  Shoulder');
+text(x3, y3,z3,'  Elbow');
+text(x4,y4,z4,'  Forearm');
 
 
